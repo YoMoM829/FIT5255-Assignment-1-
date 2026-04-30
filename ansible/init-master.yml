@@ -1,0 +1,25 @@
+- name: Initialise Kubernetes control plane
+  hosts: control_plane
+  become: yes
+
+  tasks:
+    - name: Initialise Kubernetes cluster
+      command: kubeadm init --pod-network-cidr=192.168.0.0/16
+      args:
+        creates: /etc/kubernetes/admin.conf
+
+    - name: Create .kube directory for user
+      file:
+        path: "/home/anand/.kube"
+        state: directory
+        owner: anand
+        group: anand
+
+    - name: Copy admin kubeconfig
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: "/home/anand/.kube/config"
+        remote_src: yes
+        owner: anand
+        group: anand
+        mode: '0600'

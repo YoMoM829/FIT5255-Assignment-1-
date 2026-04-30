@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yolo-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: yolo-app
+  template:
+    metadata:
+      labels:
+        app: yolo-app
+    spec:
+      containers:
+      - name: yolo-app
+        image: nase82890/yolo-app:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
+          limits:
+            cpu: "1"
+            memory: "2Gi"

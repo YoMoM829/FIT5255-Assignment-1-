@@ -1,0 +1,3 @@
+users,request_limit,requests,failures,failure_rate,avg_response_time_ms,min_response_time_ms,max_response_time_ms,requests_per_second,duration_seconds,stopped_reason
+1,100,10,10,1.0,50.93,13.444399999571033,293.7770999997156,0.7,15.01,failure_threshold_reached
+1,100,10,10,1.0,28.09,17.88440000018454,60.31940000320901,0.74,14.01,failure_threshold_reached
