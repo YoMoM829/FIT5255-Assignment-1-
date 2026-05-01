@@ -39,36 +39,36 @@ class YoloUser(HttpUser):
         with open(TEST_IMAGE, "rb") as f:
             self.image_data = base64.b64encode(f.read()).decode("utf-8")
 
-    @task
-    def annotate(self):
-        with self.client.post(
-            "/api/annotate",
-            json={
-                "uuid": "e4b2c1d0-8d2e-11eb-8dcd-0242ac130003",
-                "image": self.image_data
-            },
-            timeout=60,
-            catch_response=True,
-            name="annotate"
-        ) as response:
-            if response.status_code != 200:
-                response.failure(f"Status {response.status_code}: {response.text[:200]}")
-
-    # Predict check
     # @task
-    # def predict(self):
+    # def annotate(self):
     #     with self.client.post(
-    #         "/api/predict",
+    #         "/api/annotate",
     #         json={
     #             "uuid": "e4b2c1d0-8d2e-11eb-8dcd-0242ac130003",
     #             "image": self.image_data
     #         },
     #         timeout=60,
     #         catch_response=True,
-    #         name="predict"
+    #         name="annotate"
     #     ) as response:
     #         if response.status_code != 200:
     #             response.failure(f"Status {response.status_code}: {response.text[:200]}")
+
+    # Predict check
+    @task
+    def predict(self):
+        with self.client.post(
+            "/api/predict",
+            json={
+                "uuid": "e4b2c1d0-8d2e-11eb-8dcd-0242ac130003",
+                "image": self.image_data
+            },
+            timeout=60,
+            catch_response=True,
+            name="predict"
+        ) as response:
+            if response.status_code != 200:
+                response.failure(f"Status {response.status_code}: {response.text[:200]}")
 
 
 # ==============================

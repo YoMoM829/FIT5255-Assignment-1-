@@ -8,7 +8,7 @@
 
   tasks:
     - name: Apply Calico networking
-      command: kubectl --kubeconfig=/home/anand/.kube/config apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.3/manifests/calico.yaml
+      command: kubectl --kubeconfig=/home/{{ ansible_user }}/.kube/config apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.3/manifests/calico.yaml
 
 - name: Generate Kubernetes join command
   hosts: control_plane
@@ -29,7 +29,7 @@
 
   tasks:
     - name: Join worker to Kubernetes cluster
-      command: "{{ hostvars['control_plane'].kube_join_command }}"
+      command: "{{ hostvars[groups['control_plane'][0]].kube_join_command }}"
       args:
         creates: /etc/kubernetes/kubelet.conf
 
@@ -41,15 +41,15 @@
     - name: Copy deployment file
       copy:
         src: yolo-deployment.yaml
-        dest: /home/anand/yolo-deployment.yaml
+        dest: /home/{{ ansible_user }}/yolo-deployment.yaml
 
     - name: Copy service file
       copy:
         src: yolo-service.yaml
-        dest: /home/anand/yolo-service.yaml
+        dest: /home/{{ ansible_user }}/yolo-service.yaml
 
     - name: Apply deployment
-      command: kubectl --kubeconfig=/home/anand/.kube/config apply -f /home/anand/yolo-deployment.yaml
+      command: kubectl --kubeconfig=/home/{{ ansible_user }}/.kube/config apply -f /home/{{ ansible_user }}/yolo-deployment.yaml
 
     - name: Apply service
-      command: kubectl --kubeconfig=/home/anand/.kube/config apply -f /home/anand/yolo-service.yaml
+      command: kubectl --kubeconfig=/home/{{ ansible_user }}/.kube/config apply -f /home/{{ ansible_user }}/yolo-service.yaml

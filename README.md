@@ -110,6 +110,16 @@ The exact VM creation process depends on the cloud provider being used. Provider
 ## Important Configuration Notes
 
 Several files contain environment-specific values. These must be updated before running the deployment.
+Sign in CMD, Powershell or Mac equivalent and sign into Ubuntu.
+
+Copy over the following files into a directory of your choice:
+- inventory.ini
+- init_master.yml
+- install-k8s-tools.yml
+- setup-k8s.yml
+- site.yml
+- yolo-deployment.yaml
+- yolo-service.yaml
 
 ### 1. Ansible Inventory
 
@@ -150,8 +160,17 @@ To confirm the current VM user, SSH into the VM and run:
 ```
 whoami
 ```
-
 The output of whoami is the username that should generally be used as ansible_user.
+
+Otherwise when running:
+```
+ssh-keygen -t rsa -b 4096 -f <PATH_NAME>
+```
+
+The user of the local machine is the ansible user.
+```
+E.g if user=anand, ansible_user=anand
+```
 
 ---
 
@@ -268,15 +287,14 @@ This step only needs to be performed once per VM. After all host keys are accept
 
 To scale the number of pods:
 ```
-ansible control_plane -i inventory.ini -m shell -a "kubectl scale deployment yolo-deployment --replicas=4"
+ansible control_plane -i inventory.ini -m shell -a "kubectl scale deployment yolo-app --replicas=4"
 ```
 
 Example pod counts used during testing:
-
-1 pod
-2 pods
-4 pods
-8 pods
+- 1 pod
+- 2 pods
+- 4 pods
+- 8 pods
 
 ---
 
@@ -349,7 +367,7 @@ ansible control_plane -i inventory.ini -m shell -a "kubectl top nodes"
 
 Restart the deployment:
 ```
-ansible control_plane -i inventory.ini -m shell -a "kubectl rollout restart deployment/yolo-deployment"
+ansible control_plane -i inventory.ini -m shell -a "kubectl rollout restart deployment/yolo-app"
 ```
 
 ---
@@ -399,6 +417,8 @@ Example:
 ```
 locust -f locustfile.py --headless --host=http://34.xxx.xxx.xxx:30080
 ```
+
+You may need to augment the file path for locustfile.py to testing/locustfile.py
 
 Key behaviour:
 - Users increase in predefined steps (e.g. 1, 10, 25, 50, …)
@@ -463,6 +483,10 @@ The key metrics recorded were:
 
 It was observed that increasing pod count did not result in linear performance improvements due to CPU-bound YOLO inference, 
 indicating that system performance is constrained by node-level compute resources rather than pod availability alone.
+
+In summary, horizontal pod scaling improved throughput and supported higher concurrent users, 
+but did not significantly reduce latency due to the CPU-bound nature of YOLO inference. 
+This demonstrates that scaling efficiency is limited by underlying node compute resources rather than pod count alone.
 
 ---
 ## Author
